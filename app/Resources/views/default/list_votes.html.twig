@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container">
+
+<h1>Výsledky {{round.RoundNum}}. kola</h1>
+<div class=row>
+
+{% for vote  in votes %}
+<div class=col-sm-6>
+	{{ vote.Summed}}
+	{{include('default/player.html.twig',{'player':vote.player}) }}
+</div>
+{% endfor %}
+
+</div>
+</div>
+{% endblock %}
+
+{% block title %}
+Výsledky {{round.RoundNum}}. kola
+{% endblock %}
+
+
+{% block next %}{{ url('app_default_kill')}}{% endblock %}

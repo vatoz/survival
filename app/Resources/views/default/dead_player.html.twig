@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<img src="{{ asset('bundles/app/img/dead.png') }}" style="position:absolute;top:0px;left:0px">
+
+<div class=container><div class=row> <div class=col-sm-12>
+{{include('default/player.html.twig',{'player':player}) }}
+</div></div>
+<div class=row>
+<h2>Odpočívej v pokoji</h2>
+</div>
+</div>
+{% endblock %}
+{% block next %}{{ url('app_default_nextround')}}{% endblock %}

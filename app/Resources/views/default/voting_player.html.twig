@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container">
+<h1>Hlasování - {{player.PlayerName}} </h1>
+<div class="row vote_player">
+<div class=col-sm-12>
+{{include('default/player.html.twig',{'player':player}) }}
+
+</div>
+<form name=votes action="{{ url('app_default_votes',{"Player":player.Id})}}" type="POST">
+	{{include('default/vote.html.twig',{'id':1}) }}
+	{{include('default/vote.html.twig',{'id':2}) }}
+	{{include('default/vote.html.twig',{'id':3}) }}
+	{{include('default/vote.html.twig',{'id':4}) }}
+	{{include('default/vote.html.twig',{'id':5}) }}
+<input type=submit name="Přidat"/>
+</form>
+	
+	
+</div>
+</div>
+{% endblock %}
+{% block title %}
+Hlasování {{player.PlayerName}}
+{% endblock %}
+{% block next %}{{ url('app_default_round')}}{% endblock %}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Přežij{% endblock %} @ Impro survival</title>
+        {% block css %}
+        <link rel="stylesheet" type="text/css" media="screen" href="{{asset('bundles/app/css/bootstrap.min.css')}}"/>
+		<link rel="stylesheet" type="text/css" media="screen" href="{{asset('bundles/app/css/bootstrap-theme.min.css')}}"/>		
+		<link rel="stylesheet" type="text/css" media="screen" href="{{asset('bundles/app/css/main.css')}}"/>		
+        {% endblock %}        
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    </head>
+    <body>
+				 
+	<a style="position:absolute;top:0px;right:0px;" href="{% block next %}{{url('app_default_welcome')}}{% endblock %}"
+">Další...</a>
+{% block body %}{% endblock %}
+        {% block js %}	
+        <script type="text/javascript" src="{{asset('bundles/app/js/jquery.min.js')}}"></script>
+        <script type="text/javascript" src="{{asset('bundles/app/js/bootstrap.min.js')}}"></script>
+        <script type="text/javascript" src="{{asset('bundles/app/js/main.js')}}"></script>
+		{% endblock  %} 		 
+
+        
+</body>
+</html>
