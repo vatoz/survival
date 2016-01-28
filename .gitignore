@@ -14,6 +14,7 @@
 !var/SymfonyRequirements.php
 /vendor/
 /web/bundles/
+!/web/bundles/app/
 /nbproject/private/
 /nbproject/
 src/AppBundle/Entity/*.php~
