@@ -1,14 +1,12 @@
-//na analogové piny 1 - 5 jsou napojené potenciometry
-//na hw pin 2 je připojené tlačítko
-//výstup z těchto hodnot (u analogových pinů normalizovaný na 0-100) je posílán po seriovém portu
+//na analogové piny jsou napojené potenciometry
 const int pin=2;
-const int maxval=20;
+const int maxval=10;
 void setup()
 {
   Serial.begin(9600);
     pinMode(pin, INPUT);  
 }
-
+int t[7];
 void loop()
 {
   Serial.print ("{");
@@ -18,13 +16,22 @@ void loop()
     float q=0;  
     val = analogRead(a);    // read the input pin
     if (a>1) Serial.print (",");
-    q=val/(746/maxval); //max hodnota 746, tak takle dosáhnu 100;
+    
+    q=val/(760/maxval); //max hodnota 746, tak takle dosáhnu 100;
     val=q;
+    
     if (val>maxval) val=maxval; //trim natvrdo
-    Serial.print(val );             
+    if(t[a]==val){
+        Serial.print(val );             
+      } else{
+        Serial.print(t[a] );             
+        }
+
+    t[a]=val;
+    
   } 
-  Serial.print(",");
+  Serial.print(", ");
   Serial.print(!digitalRead(2) );
   Serial.println("}");
-  delay(45);
+  delay(90);
 }
