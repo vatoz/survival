@@ -11,7 +11,7 @@
             "app/AppCache.php"
         ],
         "psr-0":{
-			"FastVip":"server/src"
+			"FastVip":"server"
 		}
 
     },
