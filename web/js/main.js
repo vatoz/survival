@@ -6,7 +6,7 @@ function chcidata(){
 	}
 
 $(function(){
-	conn = new WebSocket('ws://192.168.1.100:8081');
+	conn = new WebSocket('ws://127.0.0.1:8081');
 	conn.onopen = function(e) {
     console.log("Connection established!");
 	chcidata();

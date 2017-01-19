@@ -4,7 +4,7 @@ use Ratchet\Http\HttpServer;
 use Ratchet\WebSocket\WsServer;
 use FastVip\FastPort;
 echo dirname(__FILE__);
-require dirname(__FILE__)."../vendor/autoload.php";
+require dirname(__FILE__)."/../vendor/autoload.php";
 
 
     $server = IoServer::factory(
