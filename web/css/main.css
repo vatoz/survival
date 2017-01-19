@@ -1,1 +1,18 @@
-.vote {font-size:100px;}
+
+body{
+
+}
+h1{
+font-size:130px;
+}
+h2{
+font-size:100px;
+}
+
+h2.vote {font-size:220px;}
+h2.voteresult{font-size:200px;
+margin-top: -350px;
+opacity:1;color:black;
+z-index:100 !important;
+position:relative;
+}

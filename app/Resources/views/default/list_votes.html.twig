@@ -7,9 +7,16 @@
 <div class=row>
 
 {% for vote  in votes %}
-<div class=col-sm-6>
-	{{ vote.Summed}}
-	{{include('default/player.html.twig',{'player':vote.player}) }}
+<div class=col-lg-6 >
+<div style="width:500px;height:500px;">
+
+<img src="/{{vote.player.Photo}}" class="img-circle"
+style="width:500px;opacity:0.6;z-index:-100 !important;position:relative;"
+/>
+<h2 class="voteresult text-center">
+	{{ vote.Summed}}</h2>	
+
+</div>
 </div>
 {% endfor %}
 

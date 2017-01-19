@@ -58,7 +58,7 @@ class DefaultController extends Controller
 			$em->persist($player);
 		}	
 		$em->flush();
-		return $this->listAction("Seznam hráčů v novém pořadí");
+		return $this->listAction("Náhodné pořadí");
     }
     
     /**
