@@ -1,6 +1,6 @@
 //na analogové piny jsou napojené potenciometry
 const int pin=2;
-const int maxval=10;
+const int maxval=100;
 void setup()
 {
   Serial.begin(9600);
@@ -17,7 +17,7 @@ void loop()
     val = analogRead(a);    // read the input pin
     if (a>1) Serial.print (",");
     
-    q=val/(760/maxval); //max hodnota 746, tak takle dosáhnu 100;
+    q=val/(730/maxval); //max hodnota 746, tak takle dosáhnu 100;
     val=q;
     
     if (val>maxval) val=maxval; //trim natvrdo
