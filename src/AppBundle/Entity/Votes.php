@@ -95,6 +95,9 @@ class Votes
         return $this->summed;
     }
 
+    public function __toString() {
+        return ''.$this->summed;
+        }
 
     /**
      * Set playerId

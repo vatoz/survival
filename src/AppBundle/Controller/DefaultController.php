@@ -54,11 +54,11 @@ class DefaultController extends Controller
 		$players=$em->getRepository("AppBundle:Player")->findAll();
 		foreach( $players as $player){
 			$player->setPosition(rand(0,199));
-			$player->setDead(0);		
+			//$player->setDead(0);		
 			$em->persist($player);
 		}	
 		$em->flush();
-		return $this->listAction("Náhodné pořadí");
+		return $this->listAction("Seznam hráčů");
     }
     
     /**
@@ -83,6 +83,22 @@ class DefaultController extends Controller
     }
     
     
+    /**
+     * @Route("/totals")
+     */
+    public function totalsAction(Request $request)
+    {
+		$em=$this->getDoctrine()->getManager();
+		$data=$em->getRepository("AppBundle:Player")->findBy(array("dead"=>0),array("position"=>"ASC"));
+		
+		return $this->render(
+			'default/list_totals.html.twig',array("players"=>$this->alivePlayers())	
+		);
+		
+    }
+    
+    
+    
     
     /**
      * @todo implement
@@ -94,12 +110,29 @@ class DefaultController extends Controller
 		$votes=$this->actualRoundVotes(
 			$round->getId()
 		);
-		
-		$last=$votes[count($votes)-1];
-		$b=$votes[count($votes)-2];
-		if($last->getSummed()<$b->getSummed()){
-			return $this->redirectToRoute("app_player_dead",array("DeadPlayer"=>$last->getPlayer()->getId()));
-		}else{
+                if($round->getRoundNum()<3){
+                	return $this->listAction("V tomto kole se ještě nevyřazuje!");
+		    
+                    
+                }
+                
+                $min=1000000000;
+                $cnt=0;
+                $tokill=null;
+                foreach($this->alivePlayers()as $p){
+                    if($p->getTotalVotes()<$min){
+                        $min=$p->getTotalVotes();
+                        $tokill=$p;
+                        $cnt=1;
+                    }elseif($p->getTotalVotes()==$min){
+                        $cnt=2;
+                    }
+                }
+                if($cnt==1){
+                	return $this->redirectToRoute("app_player_dead",array("DeadPlayer"=>$tokill->getId()));
+		                        
+                }
+                else{
 			
 			return $this->listAction("Pro rovnost hlasů do dalšího kola postupují všichni hráči");
 		}
@@ -165,7 +198,7 @@ class DefaultController extends Controller
      */
     public function nextroundAction()
     {
-		
+		$this->randomizeAction();
 		$p=$this->alivePlayers();
 		if(count($p)==1){
 			return $this->redirectToRoute("app_player_winner",array("Winner"=>$p[0]->getId()));			
@@ -229,7 +262,7 @@ class DefaultController extends Controller
     /**
      * @Route("/votes/{Player}")
      */
-    public function votesAction($Player,Request $Request)
+    public function votesAction(Request $Request,$Player)
     {	
 		$round=$this->actualRound();
 		$v=new Votes();

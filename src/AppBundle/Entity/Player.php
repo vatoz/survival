@@ -63,6 +63,13 @@ class Player
      * @ORM\OneToMany(targetEntity="Votes", mappedBy="player")
      */
     private $votes;
+    
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="TotalVotes", type="integer", options={"default":"0"})
+     */
+    private $totalVotes;
 
 
 
@@ -236,4 +243,23 @@ class Player
     {
         return $this->votes;
     }
+    
+    public function getTotalVotes(){
+    $result=0;
+    foreach($this->getVotes() as $v){
+    $result+=$v->getSummed();
+    }
+    $this->totalVotes=$result;
+    return $result;
+    }
+    
+    public function setTotalVotes($v){
+        
+    $this->totalVotes=$v;
+    }
+    public function __toString() {
+     return $this->playerName;
+    }
+    
+    
 }

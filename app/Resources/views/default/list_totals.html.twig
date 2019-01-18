@@ -3,18 +3,18 @@
 {% block body %}
 <div class="container">
 
-<h1>Výsledky {{round.RoundNum}}. kola</h1>
+<h1>Průběžné výsledky </h1>
 <div class=row>
 
-{% for vote  in votes %}
+{% for player  in players %}
 <div class=col-lg-6 >
 <div style="width:500px;height:500px;">
 
-<img src="/{{vote.player.Photo}}" class="img-circle"
+<img src="/{{player.Photo}}" class="img-circle"
 style="width:500px;opacity:0.6;z-index:-100 !important;position:relative;"
 />
 <h2 class="voteresult text-center">
-	{{ vote.Summed}}</h2>	
+	{{ player.TotalVotes}}</h2>	
 
 </div>
 </div>
@@ -25,8 +25,8 @@ style="width:500px;opacity:0.6;z-index:-100 !important;position:relative;"
 {% endblock %}
 
 {% block title %}
-Výsledky {{round.RoundNum}}. kola
+Průběžné výsledky
 {% endblock %}
 
 
-{% block next %}{{ url('app_default_totals')}}{% endblock %}
+{% block next %}{{ url('app_default_kill')}}{% endblock %}

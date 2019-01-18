@@ -75,7 +75,10 @@ function __construct(){
     {
         return $this->roundNum;
     }
-
+    public function __toString() {
+        return ''.$this->roundNum;
+    }
+    
     /**
      * Add vote
      *
