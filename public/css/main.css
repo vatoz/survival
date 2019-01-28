@@ -9,10 +9,12 @@ h2{
 font-size:100px;
 }
 
-h2.vote {font-size:220px;}
+vote {font-size:220px;position:relative;text-align:center}
 h2.voteresult{font-size:200px;
-margin-top: -350px;
+position: absolute;
+  top: 50%;
+  left: 50%;
 opacity:1;color:black;
 z-index:100 !important;
-position:relative;
+ transform: translate(-50%, -50%);
 }

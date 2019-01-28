@@ -7,13 +7,13 @@
 <div class=row>
 
 {% for vote  in votes %}
-<div class=col-lg-6 >
-<div style="width:500px;height:500px;">
+<div class="col-lg-6 col-md-6" >
+<div CLASS="vote">
 
 <img src="/{{vote.player.Photo}}" class="img-circle"
-style="width:500px;opacity:0.6;z-index:-100 !important;position:relative;"
+style="width:100%;opacity:0.6;z-index:-100 !important;"
 />
-<h2 class="voteresult text-center">
+<h2 class="voteresult ">
 	{{ vote.Summed}}</h2>	
 
 </div>
