@@ -1,0 +1,16 @@
+{% extends 'voter.html.twig' %}
+{% block body %}
+  Vítej na vyřazovací soutěži Improsurvival!
+  <br>
+  Pravidla jsou následující:
+  <ol>
+    <li>Nic není připravené.</li>
+    <li>Body z jednotlivých kol se sčítají.</li>
+    <li>Od třetího kola vyřazujeme hráče s nejnižším bodovým skóre. </li>
+  </ol>
+  <br>
+  Po vyzvání se přesuňte do dalšího kola. Hlasovat dřív stejně nemá smysl.<br> Aplikace používá cookies.<br><br>
+  <a class=button href="{{url('app_voting_offervoting') }}">Přejít</a>
+  <!-- todo tohle půjde pryč. asi -->
+  <br> Máte li údaje,  můžete se <a class=button href="{{url('homepage') }}">přihlásit</a>
+{% endblock %}

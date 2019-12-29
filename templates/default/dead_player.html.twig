@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<!--<img src="{{ asset('img/dead.png') }}" style="position:absolute;top:0px;left:0px;z-index:400">
+-->
+<div class=container><div class=row> 
+<div class=col-lg-12>
+
+<img src="/{{player.Photo}}" class=" img-circle img-responsive"
+
+>
+<h1 class=text-center>Vyřazený hráč</h1>
+</div></div>
+<div class=row>
+
+</div>
+</div>
+{% endblock %}
+{% block next %}{{ url('app_default_nextround')}}{% endblock %}
+

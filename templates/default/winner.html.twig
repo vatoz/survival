@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+	<div class=container>
+		<div class=row> 
+			<div class=col-sm-12
+			style="z-index:1000;"
+			>
+				<img src="{{ asset('img/crown.b.png') }}"  
+				style="margin-bottom:-15%;width:1000px,z-index:100 !important;position:relative;"
+				>
+				
+				<img src="/{{ player.Photo }}"  
+				style="width:1000px;position:relative;z-index:-10 !important;"
+				class="img-circle"
+				>
+			</div>
+					</div>
+		<div class=row>
+		</div>
+	</div>
+{% endblock %}
+{% block next %}
+{{ url('app_player_winner',{'Winner':player.Id,"redraw":"yes"}) 
+}}"
+{% endblock %}
+

@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container">
+
+<h1>{{ nadpis }}</h1>
+<div class=row>
+
+{% for player  in players %}
+	<div class="col-sm-6 col-lg-6" >
+	{{include('default/player.html.twig',{'player':player}) }}
+	</div>
+{% else %}
+	Hráči jsou všichni mrtví.
+{% endfor %}
+
+</div>
+</div>
+<script type="text/javascript">
+var rounddata={'round':{{round}}, players:[]};
+
+{% for player  in players %}
+	rounddata['players'][]='{{player.PlayerName}}';
+{% endfor %}
+
+var client = mqtt.connect({ port: 8081, host: 'test.mosquitto.org', keepalive: 10000});
+client.publish('survival_presence', myJSON) //fake, bude odebráno
+var votes={};
+
+
+
+	 client.subscribe('survival/#/{{round}}')
+   client.on('message', function (topic, message) {
+   votes[]=message;
+	 document.write(message);
+   })
+
+
+
+
+
+
+</script>
+
+{% endblock %}
+
+{% block title %}
+{{nadpis }}
+{% endblock %}
+{% block next %}
+{{next }}
+{% endblock %}

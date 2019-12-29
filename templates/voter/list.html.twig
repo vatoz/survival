@@ -1,0 +1,15 @@
+{% extends 'voter.html.twig' %}
+{% block body %}
+<div id=hlasy>
+<form method=post action="{{url('app_voting_offervoting') }}">
+<table>
+
+{% for player  in players %}
+  <tr><td>{{player.PlayerName}}</td><td> <input name="vote[]" type=range min=1 max=5 value=5></td></tr>
+{% endfor %}
+
+</div>
+  <tr><td></td><td><input type=submit></input></td><tr>
+</table>
+</form>
+{% endblock %}

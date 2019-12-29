@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+<div class=container>
+<div class=row>
+<h1 class=text-center>Impro Survival </h1>
+<h2 class=text-center>Vyřazovací soutěž</h2>
+</div>
+</div>
+{% endblock %}
+{% block next %}{{ url('app_default_randomize')}}{% endblock %}
