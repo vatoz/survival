@@ -1,0 +1,8 @@
+easy_admin:
+    entities:
+        - App\Entity\FastVotes
+        - App\Entity\Votes
+        - App\Entity\Player
+        - App\Entity\Round
+        - App\Entity\User
+        
