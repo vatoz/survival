@@ -14,9 +14,11 @@ use App\Entity\Votes;
 use App\Entity\Round;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Controller\PlayerController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+
 
 /*
- * @Security("is_granted('ROLE_ADMIN')")
+ *   @IsGranted("ROLE_ADMIN")
  */
 
 class DefaultController extends AbstractController

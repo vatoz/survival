@@ -92,6 +92,7 @@ class VotingController extends AbstractController
               $K->setRawData(json_encode($votes));
               $K->setRound(0);
               $K->setSession($this->session->getId());
+
               $em->persist($K);
               $em->flush();
 
