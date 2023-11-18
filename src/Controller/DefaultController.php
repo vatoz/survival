@@ -33,6 +33,19 @@ class DefaultController extends AbstractController
         return $this->render('default/index.html.twig' );
     }
 
+    
+    /**
+     * Reset hráčů
+     * @Route("/reset")
+     */
+    public function resetAction(Request $request)
+    {
+      $this->clearAllRounds();
+      return $this->listAction("Oživuji hráče a zahazuji kola.","start");
+    }
+
+
+
 
     /**
      * Druhá, vítací obrazovka. Nic speciálního nedělá
@@ -72,7 +85,7 @@ class DefaultController extends AbstractController
     {
 		$round= $this->actualRound();
 		$votes=$this->actualRoundVotes(
-		$round->getId()
+		  $round->getId()
 		);
 
 		// replace this example code with whatever you need
@@ -145,7 +158,7 @@ class DefaultController extends AbstractController
     }
 
 
-    private function alivePlayers(){
+  private function alivePlayers(){
 		$em=$this->getDoctrine()->getManager();
 		return $em->getRepository("App:Player")->findBy(array("dead"=>0),array("position"=>"ASC"));
 	}
@@ -195,7 +208,15 @@ class DefaultController extends AbstractController
 
 	}
 
-
+  private function clearAllRounds(){
+    $em=$this->getDoctrine()->getManager();
+    
+    $em->getConnection()->prepare('delete from  fast_votes')->execute();
+    $em->getConnection()->prepare('delete from votes')->execute();
+    $em->getConnection()->prepare('delete from  round')->execute();
+    $em->getConnection()->prepare('update player set dead=0')->execute();
+    
+  }
 
 
     private function assignRawVotes( $RoundId){
