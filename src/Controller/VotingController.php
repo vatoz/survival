@@ -38,7 +38,7 @@ class VotingController extends AbstractController
 
       $data=$this->getDoctrine()->getRepository("App:Round")->findBy(
         array("isOpen"=>1),
-        array("roundNum"=>"DESC")
+        array("RoundNum"=>"DESC")
       );
       foreach($data as $Row)		{
         return $Row;
