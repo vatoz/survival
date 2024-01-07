@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container">
+
+<h1>{{ nadpis }}</h1>
+<h1 id="vysledek">0</h1>
+
+</div>
+<script>
+    callback=function(){
+        $.getJSON( "{{json}}", function( data ) {
+        var old=$("#vysledek").html();
+        $("#vysledek").html(data);
+        if(old==data){
+            setTimeout(callback ,1000 );        
+        }else{
+            setTimeout(callback ,10 );
+        }
+  });}
+
+    setTimeout(callback ,10 );
+</script>
+
+{% endblock %}
+{% block title %}
+{{nadpis }}
+{% endblock %}
+{% block next %}
+{{next }}
+{% endblock %}

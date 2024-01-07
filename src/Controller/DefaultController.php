@@ -237,9 +237,11 @@ class DefaultController extends AbstractController
 
     private function cleanupVotes(){
       $em = $this->getDoctrine()->getManager();
-      $RAW_QUERY = 'DELETE from fast_votes where round=0 and   id not in (select max(id) as candidate from fast_votes where round = 0 group by session)';      
-      $statement = $em->getConnection()->prepare($RAW_QUERY);
-      $statement->execute();
+      //select max(id) as candidate from fast_votes where round = 0 group by session
+
+
+      //$em->getConnection()->executeStatement('update  fast_votes set round=-2 where round=0 and id not in (902)');      
+      
     }
 
 
