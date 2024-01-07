@@ -30,6 +30,15 @@ class Round
      */
     private $roundNum;
 
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="IsOpen", type="integer", options={"default" : 1})
+     */
+    private $isOpen;
+
+   
+
 	/**
      *
      * @ORM\OneToMany(targetEntity="Votes", mappedBy="round")
@@ -75,6 +84,18 @@ function __construct(){
     {
         return $this->roundNum;
     }
+
+    public function getIsOpen()
+    {
+        return $this->isOpen;
+    }
+    public function setIsOpen($isOpen)
+    {
+        $this->isOpen=$isOpen;
+        return $this;
+    }
+
+
     public function __toString() {
         return ''.$this->roundNum;
     }

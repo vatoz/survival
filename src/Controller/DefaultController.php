@@ -15,6 +15,9 @@ use App\Entity\Round;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Controller\PlayerController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Contracts\Cache\ItemInterface;
+
 
 
 /*
@@ -30,7 +33,8 @@ class DefaultController extends AbstractController
      */
     public function indexAction(Request $request)
     {
-        return $this->render('default/index.html.twig' );
+      $this->clearVotingCaches();
+      return $this->render('default/index.html.twig' );        
     }
 
     
@@ -168,13 +172,13 @@ class DefaultController extends AbstractController
      */
     public function listAction($Title="",$Next="",$Round=0)
     {
-		$em=$this->getDoctrine()->getManager();
-		$data=$em->getRepository("App:Player")->findBy(array("dead"=>0),array("position"=>"ASC"));
-		if ($Title=="") $Title= "Seznam hráčů";
-		if ($Next=="") $Next= $this->generateUrl("app_default_nextround");
-		return $this->render(
-			'default/list_players.html.twig',array("players"=>$this->alivePlayers(),"round"=>$Round, "nadpis"=>$Title,"next"=>$Next)
-		);
+      $em=$this->getDoctrine()->getManager();
+      $data=$em->getRepository("App:Player")->findBy(array("dead"=>0),array("position"=>"ASC"));
+      if ($Title=="") $Title= "Seznam hráčů";
+      if ($Next=="") $Next= $this->generateUrl("app_default_nextround");
+      return $this->render(
+        'default/list_players.html.twig',array("players"=>$this->alivePlayers(),"round"=>$Round, "nadpis"=>$Title,"next"=>$Next)
+      );
     }
 
 
@@ -218,9 +222,28 @@ class DefaultController extends AbstractController
     
   }
 
+  private function clearVotingCaches(){
+    $cache = new FilesystemAdapter();
+    $cache->delete('rebel');
+    $cache->delete('voting');
+    $cache->delete('round');
+    $cache->delete('players');
+  }
+
+    /*
+    * Pokud někdo v rámci Session  stihl hlasovat vicekrát, necháme jen hlas
+    * s nejvyšším id a ostatní smažeme
+    */
+
+    private function cleanupVotes(){
+      $em = $this->getDoctrine()->getManager();
+      $RAW_QUERY = 'DELETE from fast_votes where round=0 and   id not in (select max(id) as candidate from fast_votes where round = 0 group by session)';      
+      $statement = $em->getConnection()->prepare($RAW_QUERY);
+      $statement->execute();
+    }
+
 
     private function assignRawVotes( $RoundId){
-
 
         $em = $this->getDoctrine()->getManager();
 
@@ -230,9 +253,6 @@ class DefaultController extends AbstractController
         // Set parameters
         $statement->bindValue('val', $RoundId);
         $statement->execute();
-
-
-
 
     }
 
@@ -259,10 +279,12 @@ class DefaultController extends AbstractController
 
   		$v=new Round();
   		$v->setRoundNum($new);
+      $v->setIsOpen(1);
   		$em=$this->getDoctrine()->getManager();
   		$em->persist($v);
   		$em->flush();
 
+      $this->clearVotingCaches();
 
   		return $this->listAction($new.". kolo",$this->generateUrl("app_default_round"),$new);
     }
@@ -288,6 +310,9 @@ class DefaultController extends AbstractController
   		if(is_null($round)){
   			return $this->redirectToRoute("app_default_nextround");
   		}
+
+      $this->cleanupVotes();//nechceme aby hráč hlasoval v kole vícekrát
+
       $this->assignRawVotes($roundid);
 
 		$players=$this->alivePlayers();
@@ -296,22 +321,27 @@ class DefaultController extends AbstractController
     $results=array(0,0,0,0,0,0);
 
     //sessionfilter, use only last value from session , it is still possible to fake, but not too easy :)
+    //odstraněno, máme na úrovni databáze
+    /*
+    
     $filtered=array();
     foreach($fastvotes as $Vote){
       $filtered[$Vote->getSession()]=$Vote->getRawData();
-    }
+    }*/
 
 
     $vtnum=0;
-    foreach($filtered as $Vote){
+    foreach($fastvotes as $Vote){
       $vtnum++;
-      $r=json_decode($Vote);
+      $r=json_decode($Vote->getRawData());
         foreach($r as $Key=>$Value){
           $results[$Key]+=$Value;
         }
     }
 
     $em=$this->getDoctrine()->getManager();
+    $round->setIsOpen(0);
+    $em->persist($round);
     $Pid=0;
     foreach($players as $Player){
       $V=new Votes();
@@ -321,6 +351,9 @@ class DefaultController extends AbstractController
     }
 
     $em->flush();
+
+    $this->clearVotingCaches();
+
     //return new Response ("spočteno" . var_export($results));
 		return $this->redirectToRoute("app_default_lvotes");
 
