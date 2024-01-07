@@ -20,13 +20,13 @@ class PlayerController extends AbstractController
      */
     public function winnerAction($Winner)
     {
-
 		$data=$this->getDoctrine()->getRepository("App:Player")->find($Winner);
 		return $this->render('default/winner.html.twig',["player"=>$data] );
     }
 
 
     /**
+	 * Note: Asi nikd enepoužívám
      * @Route("/player/add/{Male}/{PlayerName}")
      */
     private function addAction($PlayerName,$Male)

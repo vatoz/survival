@@ -3,8 +3,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use Doctrine\Common\Collections\ArrayCollection;
+use App\Repository\PlayerRepository;
 
 /**
  * Round
@@ -33,11 +33,25 @@ class Round
     /**
      * @var int
      *
-     * @ORM\Column(name="IsOpen", type="integer", options={"default" : 1})
+     * @ORM\Column(name="IsOpen", type="integer", options={"default" : 0})
      */
     private $isOpen;
 
-   
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="allowElimination", type="integer", options={"default" : 0})
+     */
+    private $allowElimination;
+
+    /**
+     * @var string
+     * Ukládá JSON s hráči
+     * @ORM\Column(name="playerDefinition", type="string" , options={"default" : ""})
+     */
+    private $playerDefinition;
+
+  
 
 	/**
      *
@@ -96,11 +110,33 @@ function __construct(){
     }
 
 
+    public function getAllowElimination()
+    {
+        return $this->allowElimination;
+    }
+    public function setAllowElimination($AllowElimination)
+    {
+        $this->allowElimination=$AllowElimination;
+        return $this;
+    }
+
+
+
+
     public function __toString() {
         return ''.$this->roundNum;
     }
 
-    /**
+    function getPlayerDefinition(){
+        return $this->playerDefinition;
+    }
+
+    function setPlayerDefinition($playerDefinition){
+        $this->playerDefinition= $playerDefinition;
+        return $this;
+    }
+
+        /**
      * Add vote
      *
      * @param \App\Entity\Votes $vote

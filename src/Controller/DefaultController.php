@@ -69,16 +69,16 @@ class DefaultController extends AbstractController
      */
     public function randomizeAction()
     {
-		$em=$this->getDoctrine()->getManager();
+      $em=$this->getDoctrine()->getManager();
 
-		$players=$em->getRepository("App:Player")->findAll();
-		foreach( $players as $player){
-			$player->setPosition(rand(0,199));
-			//$player->setDead(0);
-			$em->persist($player);
-		}
-		$em->flush();
-		return $this->listAction("Seznam hráčů");
+      $players=$em->getRepository("App:Player")->findAll();
+      foreach( $players as $player){
+        $player->setPosition(rand(0,199));
+        //$player->setDead(0);
+        $em->persist($player);
+      }
+      $em->flush();
+      return $this->listAction("Seznam hráčů");
     }
 
     /**
@@ -87,10 +87,10 @@ class DefaultController extends AbstractController
      */
     public function lvotesAction(Request $request)
     {
-		$round= $this->actualRound();
-		$votes=$this->actualRoundVotes(
-		  $round->getId()
-		);
+      $round= $this->actualRound();
+      $votes=$this->actualRoundVotes(
+        $round->getId()
+      );
 
 		// replace this example code with whatever you need
         return $this->render('default/list_votes.html.twig'
@@ -108,17 +108,13 @@ class DefaultController extends AbstractController
      */
     public function totalsAction(Request $request)
     {
-		$em=$this->getDoctrine()->getManager();
-		$data=$em->getRepository("App:Player")->findBy(array("dead"=>0),array("position"=>"ASC"));
+      $em=$this->getDoctrine()->getManager();
+      $data=$em->getRepository("App:Player")->findBy(array("dead"=>0),array("position"=>"ASC"));
 
-		return $this->render(
-			'default/list_totals.html.twig',array("players"=>$this->alivePlayers())
-		);
-
+      return $this->render(
+        'default/list_totals.html.twig',array("players"=>$this->alivePlayers())
+      );
     }
-
-
-
 
     /**
      * @todo implement
@@ -127,6 +123,9 @@ class DefaultController extends AbstractController
     public function killAction(Request $request)
     {
 		$round= $this->actualRound();
+    if (!$round->getAllowElimination()){
+      return $this->redirectToRoute("app_default_nextround");
+    }
 		$votes=$this->actualRoundVotes(
 			$round->getId()
 		);
@@ -154,18 +153,26 @@ class DefaultController extends AbstractController
                 }
                 else{
 
-			return $this->listAction("Pro rovnost počtu hlasů do dalšího kola postupují všichni hráči");
+			return $this->listAction("Aktuální skóre na posledním místě je shodné. Do dalšího kola postupují všichni hráči");
 		}
+  }
 
-
-
+  
+  private function actualRoundPlayers(){
+    $plids=json_decode($this->actualRound()->getPlayerDefinition());
+    $players=array();
+    $rp=$this->getDoctrine()->getManager()->getRepository("App:Player");
+    foreach($plids as $id){
+      $players[]=$rp->find($id);
     }
+    return $players;
+  }
 
 
-  private function alivePlayers(){
-		$em=$this->getDoctrine()->getManager();
-		return $em->getRepository("App:Player")->findBy(array("dead"=>0),array("position"=>"ASC"));
-	}
+    private function alivePlayers(){
+      $em=$this->getDoctrine()->getManager();
+      return $em->getRepository("App:Player")->findBy(array("dead"=>0),array("position"=>"ASC"));
+    }
 
     /**
      * @Route("/list")
@@ -174,50 +181,45 @@ class DefaultController extends AbstractController
     {
       $em=$this->getDoctrine()->getManager();
       $data=$em->getRepository("App:Player")->findBy(array("dead"=>0),array("position"=>"ASC"));
+
+      $players=$this->actualRoundPlayers();
       if ($Title=="") $Title= "Seznam hráčů";
       if ($Next=="") $Next= $this->generateUrl("app_default_nextround");
+
       return $this->render(
-        'default/list_players.html.twig',array("players"=>$this->alivePlayers(),"round"=>$Round, "nadpis"=>$Title,"next"=>$Next)
+        'default/list_players.html.twig',array("players"=>$players,"round"=>$Round, "nadpis"=>$Title,"next"=>$Next)
       );
     }
 
-
-
-
-
-
-
-
-
     private function actualRound(){
-		$data=$this->getDoctrine()->getRepository("App:Round")->findBy(
-			array(),
-			array("roundNum"=>"DESC")
-		);
-		foreach($data as $Row)		{
-			return $Row;
-		}
-		return null;
-	}
+      $data=$this->getDoctrine()->getRepository("App:Round")->findBy(
+        array(),
+        array("roundNum"=>"DESC")
+      );
+      foreach($data as $Row)		{
+        return $Row;
+      }
+      return null;
+	  }
 
    private function  actualRoundVotes($RoundId){
-		$data=$this->getDoctrine()->getRepository("App:Votes")->findBy(
-			array("round"=>$RoundId
+    $data=$this->getDoctrine()->getRepository("App:Votes")->findBy(
+      array("round"=>$RoundId
 
-			),
-			array("summed"=>"DESC")
-		);
+      ),
+      array("summed"=>"DESC")
+    );
 
-		return $data;
+    return $data;
 
 	}
 
   private function clearAllRounds(){
     $em=$this->getDoctrine()->getManager();
     
-    $em->getConnection()->prepare('delete from  fast_votes')->execute();
+    $em->getConnection()->prepare('delete from fast_votes')->execute();
     $em->getConnection()->prepare('delete from votes')->execute();
-    $em->getConnection()->prepare('delete from  round')->execute();
+    $em->getConnection()->prepare('delete from round')->execute();
     $em->getConnection()->prepare('update player set dead=0')->execute();
     
   }
@@ -238,7 +240,7 @@ class DefaultController extends AbstractController
     private function cleanupVotes(){
       $em = $this->getDoctrine()->getManager();
       //select max(id) as candidate from fast_votes where round = 0 group by session
-
+      //todo opravit, tohle tu chci
 
       //$em->getConnection()->executeStatement('update  fast_votes set round=-2 where round=0 and id not in (902)');      
       
@@ -260,6 +262,43 @@ class DefaultController extends AbstractController
 
 
     /**
+     
+     * @Route("/duringVotingJSON")
+     */  
+    public function duringVotingJsonAction(){
+      $this->cleanupVotes();//nechceme aby hráč hlasoval v kole vícekrát
+      $v=$this->getRawVotes(0);
+      return new JsonResponse( count($v));
+    }
+
+
+    /**
+     * 	Právě probíhá hlasování
+     *  aktualizace stránky průběžně pomocí js
+     * @Route("/duringVoting")
+     */  
+    public function duringVotingAction(){   
+      
+      //Povol hlasování v aktuálním kole
+      $data=$this->actualRound(); 
+      $data->setIsOpen(1); 
+  		$em=$this->getDoctrine()->getManager();
+      $em->persist($data);
+      $em->flush();          
+
+      $this->clearVotingCaches();
+
+      return $this->render(
+        'default/during_voting.html.twig',
+        array(
+          "nadpis"=>"Probíhá hlasování: ",
+          "next"=> $this->generateUrl("app_default_round"),
+          "json"=> $this->generateUrl("app_default_duringvotingjson")
+        )
+      );      
+    }
+
+    /**
      * 	Vytvoří kolo a zobrazí hlavičku
      * @Route("/nextround")
      */
@@ -278,17 +317,46 @@ class DefaultController extends AbstractController
   		if(!is_null($data)){
   			$new = $data->getRoundNum()+1;
   		}
+      
 
-  		$v=new Round();
+      $v=new Round();
+
+      // první kolo hrají všichni, druhé - čtvrté dvojice a    páté zase všichni. v pátém se začíná eliminovat.
+      if($new<5){
+        $v->setAllowElimination(0);
+      }else{
+        $v->setAllowElimination(1);
+      }
+
+      $playerids=[];
+      foreach ( $p as $player){
+        $playerids[]=$player->getId();
+      }
+
+      switch($new){
+        case 2:
+          $playerids=[$playerids[0],$playerids[1]];
+          break;
+        case 3:
+          $playerids=[$playerids[2],$playerids[3]];
+          break;  
+        case 4:
+          $playerids=[$playerids[4],$playerids[5]];
+          break;  
+      }
+
   		$v->setRoundNum($new);
-      $v->setIsOpen(1);
+      $v->setPlayerDefinition(    
+        json_encode($playerids)
+      );
+      $v->setIsOpen(0); //Povolím až v dalším kroku
   		$em=$this->getDoctrine()->getManager();
   		$em->persist($v);
   		$em->flush();
 
       $this->clearVotingCaches();
 
-  		return $this->listAction($new.". kolo",$this->generateUrl("app_default_round"),$new);
+  		return $this->listAction($new.". kolo",$this->generateUrl("app_default_duringvoting"),$new);
     }
 
     private function  getRawVotes( $RoundId){
@@ -301,9 +369,8 @@ class DefaultController extends AbstractController
  	}
 
     /**
-     * pokud se nehlasovalo pro všechny hráče, hlasuje se pro ně
-	 * jinak redirect na výsledky kola
-     * @Route("/round")
+     * zpracuje fast votes
+	   * @Route("/round")
      */
     public function roundAction()
     {
@@ -317,25 +384,24 @@ class DefaultController extends AbstractController
 
       $this->assignRawVotes($roundid);
 
-		$players=$this->alivePlayers();
+		  $players=$this->actualRoundPlayers();
 
-    $fastvotes=$this->getRawVotes($roundid);
-    $results=array(0,0,0,0,0,0);
+      $fastvotes=$this->getRawVotes($roundid);
+      $results=array(0,0,0,0,0,0);
 
     //sessionfilter, use only last value from session , it is still possible to fake, but not too easy :)
     //odstraněno, máme na úrovni databáze
-    /*
-    
+    //todo obnovit, dblevel zatím nefunguje
+        
     $filtered=array();
     foreach($fastvotes as $Vote){
       $filtered[$Vote->getSession()]=$Vote->getRawData();
-    }*/
-
+    }
 
     $vtnum=0;
-    foreach($fastvotes as $Vote){
+    foreach($filtered as $Vote){
       $vtnum++;
-      $r=json_decode($Vote->getRawData());
+      $r=json_decode($Vote);
         foreach($r as $Key=>$Value){
           $results[$Key]+=$Value;
         }
@@ -344,6 +410,7 @@ class DefaultController extends AbstractController
     $em=$this->getDoctrine()->getManager();
     $round->setIsOpen(0);
     $em->persist($round);
+
     $Pid=0;
     foreach($players as $Player){
       $V=new Votes();
@@ -358,11 +425,6 @@ class DefaultController extends AbstractController
 
     //return new Response ("spočteno" . var_export($results));
 		return $this->redirectToRoute("app_default_lvotes");
-
-
     }
-
-
-
 
 }
