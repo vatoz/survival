@@ -12,8 +12,11 @@
 		<link rel="stylesheet" type="text/css" media="screen" href="{{asset('css/main.css')}}"/>
 
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+<script type="text/javascript" src="{{asset('js/jquery.min.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/main.js')}}"></script>
+
     </head>
-    <body onkeyup="Save()">
+    <body onkeyup="Save(event)">
 
 	<a id="next" style="position:absolute;top:0px;right:0px;" href="#"
 onclick="Save();">Další...</a>
@@ -22,7 +25,5 @@ onclick="Save();">Další...</a>
 </form>
 {% block js %}
 {% endblock  %}
-<script type="text/javascript" src="{{asset('js/jquery.min.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/main.js')}}"></script>
 </body>
 </html>
