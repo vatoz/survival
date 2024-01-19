@@ -159,6 +159,12 @@ class DefaultController extends AbstractController
 
   
   private function actualRoundPlayers(){
+
+    $round=$this->actualRound();
+    if(is_null($round)){
+      return $this->alivePlayers();
+    }
+
     $plids=json_decode($this->actualRound()->getPlayerDefinition());
     $players=array();
     $rp=$this->getDoctrine()->getManager()->getRepository("App:Player");
@@ -375,10 +381,11 @@ class DefaultController extends AbstractController
     public function roundAction()
     {
   		$round=$this->actualRound();
-      $roundid=$round->getId();
+      
   		if(is_null($round)){
   			return $this->redirectToRoute("app_default_nextround");
   		}
+      $roundid=$round->getId();
 
       $this->cleanupVotes();//nechceme aby hráč hlasoval v kole vícekrát
 
